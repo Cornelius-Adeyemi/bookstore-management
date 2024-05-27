@@ -16,8 +16,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.HashMap;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -62,6 +64,8 @@ private  AuthenticationService authenticationService;
         GeneralResponseDTO generalResponseDTO = (GeneralResponseDTO) authenticationService.login(TestUtil.getLoginDTO());
 
         assertNotNull(generalResponseDTO);
+
+        assertEquals(token,((HashMap<String, Object>)generalResponseDTO.getData()).get("token") );
     }
 
 
