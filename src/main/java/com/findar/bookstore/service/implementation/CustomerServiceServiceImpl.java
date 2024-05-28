@@ -109,14 +109,14 @@ public class CustomerServiceServiceImpl implements CustomerService {
                 () -> new GeneralException(Errors.INVALID_BORROWID, borrowedId)
         );
 
-        if (!borrowed.getUser().getUsername().equalsIgnoreCase(securityDetailsHolder.getUsername())) {
+        if (!borrowed.getUser().getUsername().equalsIgnoreCase(securityDetailsHolder.getUsername())) { // this check if it is the login user that borrowed the books
 
             throw new GeneralException(Errors.UNAUTHORISED_ACCESS_TO_BORROWED_BOOK, borrowedId);
         }
 
        Set<Book> borrowedBook =  borrowed.getBooks();
 
-        for(Book book : borrowedBook){
+        for(Book book : borrowedBook){ // this logic increase the quantity of that book by one in the store and change the availability
             int quantity = book.getAvailableQuantity() + 1;
             book.setAvailable(true);
             book.setAvailableQuantity(quantity);
