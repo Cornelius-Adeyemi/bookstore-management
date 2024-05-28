@@ -48,7 +48,7 @@ public class CustomerServiceServiceImpl implements CustomerService {
 
         SecurityDetailsHolder securityDetailsHolder = GetLoginUser.getLoginUser();
         Users users = userRepository.findByEmail(securityDetailsHolder.getEmail()).get();
-
+        log.info("------------------------- user {} want to borrow books with the following ids {}", users.getFirstName().concat( " "+ users.getLastName()), listOfBookId);
         AtomicReference<String> unreturnedId = new AtomicReference<>();
 
         if( users.getBorrows().stream().anyMatch((bo) -> {
@@ -104,6 +104,7 @@ public class CustomerServiceServiceImpl implements CustomerService {
 
         SecurityDetailsHolder securityDetailsHolder = GetLoginUser.getLoginUser();
 
+        log.info("------------------------- user {} want to return books with borrowId {}", securityDetailsHolder.getEmail(), borrowedId);
         Borrowed borrowed = borrowRepository.findByBorrowId(borrowedId).orElseThrow(
                 () -> new GeneralException(Errors.INVALID_BORROWID, borrowedId)
         );

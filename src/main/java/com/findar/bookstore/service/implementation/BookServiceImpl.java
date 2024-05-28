@@ -36,7 +36,7 @@ public class BookServiceImpl implements BookService {
     private  final BookRepository bookRepository;
 
     public Object getAllBooks(int pageNum, int pageSize){
-
+        log.info("------------------------- get all  book");
         Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by("createdTime").descending());
 
         Page<Book> bookPage = bookRepository.findAllByDeletedFalse(pageable);
@@ -58,6 +58,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Object getABook(Long id) {
+
+        log.info("------------------------- get book with id: {}", id);
         Book  book = bookRepository.findBookById(id).orElseThrow(
                 ()-> new GeneralException(Errors.INVALID_BOOK_ID, id)
         );
@@ -73,6 +75,7 @@ public class BookServiceImpl implements BookService {
 
 
     public Object searchBook(String keyword, int pageNo, int pageSize){
+        log.info("------------------------- search book using the keyword : {}", keyword);
 
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdTime").descending());
 

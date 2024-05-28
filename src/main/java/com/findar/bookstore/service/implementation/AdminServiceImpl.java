@@ -54,6 +54,8 @@ public class AdminServiceImpl  implements AdminService {
     @Override
     public Object addBook(AddBookDTO addBookDTO) {
 
+        log.info("------------------------- add book");
+
       if(addBookDTO.getAvailableQuantity() <= 0) throw new GeneralException(Errors.INVALID_BOOK_QUANTITY, addBookDTO.getTitle());
 
         Book book  = bookDTOMapper(addBookDTO);
@@ -70,6 +72,7 @@ public class AdminServiceImpl  implements AdminService {
 
     @Override
     public Object addBookViaFile(MultipartFile file) {
+        log.info("------------------------- add via csv file");
         try(CSVReader reader = createCsvReader(file)){
             String[] headers = readCsvHeaders(reader);// get Csv header
             validateCsvHeaders(headers); // check if header is valid
@@ -155,6 +158,8 @@ public class AdminServiceImpl  implements AdminService {
 
     @Override
     public Object updateBook(Long id, UpdateBookDTO updateBookDTO) {
+
+        log.info("------------------------- update book");
         Book  book = bookRepository.findBookById(id).orElseThrow(
                 ()-> new GeneralException(Errors.INVALID_BOOK_ID, id)
         );
@@ -178,7 +183,7 @@ public class AdminServiceImpl  implements AdminService {
      */
     @Override
     public Object disableUser(String email) {
-
+        log.info("------------------------- disable user");
         Users users = getUser(email);
 
         users.setActive(false);
@@ -194,6 +199,7 @@ public class AdminServiceImpl  implements AdminService {
 
     @Override
     public Object getAllUser( int pageNum, int pageSize ) {
+        log.info("------------------------- get all user");
 
         Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by("createdTime").descending());
 
@@ -219,6 +225,7 @@ public class AdminServiceImpl  implements AdminService {
      */
 
     public Object getAUser(String email){
+        log.info("------------------------- get a user {}", email);
         Users users = getUser(email);
 
         UserResponseDTO userResponseDTO = this.userMapperToDto(users);
@@ -236,6 +243,8 @@ public class AdminServiceImpl  implements AdminService {
      */
 
     public Object getBooksBorrowByCustomer(String email){
+
+        log.info("------------------------- get book borrowed by {}",email);
         Users users = getUser(email);
 
         List<Borrowed> borrowedList = borrowRepository.findByReturnedFalseAndUser_email(users.getEmail());
@@ -252,7 +261,7 @@ public class AdminServiceImpl  implements AdminService {
     }
 
     public Object deleteBook(Long id){
-
+        log.info("------------------------- delete book {}", id);
         Book  book = bookRepository.findBookById(id).orElseThrow(
                 ()-> new GeneralException(Errors.INVALID_BOOK_ID, id)
         );
@@ -273,7 +282,7 @@ public class AdminServiceImpl  implements AdminService {
     @Override
     public void downloadCSVFileSample(HttpServletResponse response) {
 
-
+        log.info("------------------------- download csv upload sample ");
         try {
             String fileName = "bulkBookUploadTemplate.csv";
             response.setContentType("text/csv");
