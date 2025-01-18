@@ -1,5 +1,6 @@
 package com.findar.bookstore.DTOS.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
@@ -30,10 +31,11 @@ public class UserDTO {
     @NotEmpty
     private String lastName;
 
+    @JsonIgnore
     private LocalDateTime createdAt;
 
     private String role;
-
+   @JsonIgnore
     private LocalDateTime lastModifiedAt;
 
 }

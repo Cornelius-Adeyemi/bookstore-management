@@ -8,20 +8,23 @@ import com.findar.bookstore.config.jwt.JwtService;
 import com.findar.bookstore.config.security.CustomUserDetailService;
 import com.findar.bookstore.config.security.CustomerUserDetails;
 import com.findar.bookstore.enums.Constant;
-import com.findar.bookstore.enums.Errors;
+import com.findar.bookstore.exception.Errors;
 import com.findar.bookstore.enums.Role;
 import com.findar.bookstore.exception.GeneralException;
+import com.findar.bookstore.model.entity.OtpBase;
 import com.findar.bookstore.model.entity.Users;
+import com.findar.bookstore.repository.OtpRepository;
 import com.findar.bookstore.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -40,6 +43,8 @@ public class AuthenticationService {
 
   private final JwtService jwtService;
 
+  private final OtpRepository otpRepository;
+
     public Object login(LoginDTO loginDTO){
        log.info("-----------------> {} Login ",loginDTO.getEmail());
         CustomerUserDetails userDetails = userDetailsService.loadUserByUsername(loginDTO.getEmail());
@@ -57,16 +62,29 @@ public class AuthenticationService {
          throw new GeneralException(e.getMessage(), HttpStatus.UNAUTHORIZED,null );
         }
 
+        if(Boolean.TRUE.equals(userDetails.getTwoFa())){
 
-        String  token = jwtService.generateToken(userDetails);
-        HashMap<String, String> tokenObject = new HashMap<>();
+             int otpCode = generateSecureSixDigitNumber();
 
-        tokenObject.put("token", token);
-        return GeneralResponseDTO.builder()
-                .message(Constant.LOGIN_SUCCESSFUL.getMessage())
-                .success(true)
-                .data(tokenObject)
-                .build();
+            OtpBase otpBase = OtpBase.builder()
+                    .otpCode(String.valueOf(otpCode))
+                    .active(true)
+                    .attempt(0)
+                    .email(userDetails.getEmail())
+                    .build();
+
+             otpRepository.save(otpBase);
+
+             log.info("here is the merchant : {} otp code {}", userDetails.getEmail(), otpCode);
+
+             return GeneralResponseDTO.builder()
+                     .message("An otp code has been sent to you")
+                     .success(true)
+                     .build();
+
+        }
+
+      return   generateOtpCode( userDetails);
 
 
 
@@ -106,12 +124,77 @@ public class AuthenticationService {
 
     }
 
+    public GeneralResponseDTO validateOtP(String emailOrUsername, String otpCode  ){
+
+        CustomerUserDetails userDetails = userDetailsService.loadUserByUsername(emailOrUsername);
+
+       OtpBase  otpBase = otpRepository.findFirstByEmailAndActiveTrue(userDetails.getEmail()).orElseThrow(
+                ()-> new GeneralException(emailOrUsername +" does not have an active otp code", HttpStatus.BAD_REQUEST,null )
+        );
+
+        checkIfOtpCodeHasExpired( otpBase);
+
+       if(!otpBase.getOtpCode().equals(otpCode)){
+
+        return    invalidOtpProvided( otpBase);
+       }
+
+       return  generateOtpCode( userDetails);
+    }
+
+
+    private GeneralResponseDTO generateOtpCode(CustomerUserDetails userDetails){
+
+        String  token = jwtService.generateToken(userDetails);
+        HashMap<String, String> tokenObject = new HashMap<>();
+
+        tokenObject.put("token", token);
+        return GeneralResponseDTO.builder()
+                .message(Constant.LOGIN_SUCCESSFUL.getMessage())
+                .success(true)
+                .data(tokenObject)
+                .build();
+
+
+    }
+
+    private void checkIfOtpCodeHasExpired(OtpBase otpBase){
+
+        if(otpBase.getCreatedTime().plusMinutes(5l).isBefore(LocalDateTime.now())){
+            otpRepository.delete(otpBase);
+            throw new GeneralException("Otp code has expired", HttpStatus.BAD_REQUEST,null);
+        }
+    }
+
+    private GeneralResponseDTO invalidOtpProvided(OtpBase otpBase){
+
+
+        if(otpBase.getAttempt()==5){
+            otpRepository.delete(otpBase);
+            throw new GeneralException("number of attempt reached please generate another code", HttpStatus.BAD_REQUEST,null);
+        }
+
+        Integer attempt = otpBase.getAttempt() == 0 ? 1 : otpBase.getAttempt() + 1;
+        otpBase.setAttempt(attempt);
+        otpRepository.save(otpBase);
+
+        return GeneralResponseDTO.builder()
+                .message("Invalid Otp Code provided")
+                .success(false)
+                .data(null)
+                .build();
+
+    }
+
+
+
     private Users userDTOMapper(UserDTO userDTO){
       Users users = new Users();
       users.setEmail(userDTO.getEmail());
       users.setUserName(userDTO.getUserName() == null? userDTO.getEmail(): userDTO.getUserName());
       users.setActive(true);
       users.setRole(Role.CUSTOMER);
+      users.setTwoFa(true);
       users.setFirstName(userDTO.getFirstName());
       users.setLastName(userDTO.getLastName());
       users.setPassword(passwordEncoder.encode(userDTO.getPassword()));
@@ -120,16 +203,19 @@ public class AuthenticationService {
 
     }
 
+    public static int generateSecureSixDigitNumber(){
+        SecureRandom secureRandom = new SecureRandom();
+        return secureRandom.nextInt(900000) + 100000;
+    }
+
     private UserDTO UserMapperToDTO(Users users){
 
-        UserDTO userDTO = UserDTO.builder()
+        return UserDTO.builder()
                 .userName(users.getUsername())
                 .email(users.getEmail())
                 .lastName(users.getLastName())
                 .firstName(users.getFirstName())
                 .role(users.getRole())
                 .build();
-
-       return userDTO;
     }
 }

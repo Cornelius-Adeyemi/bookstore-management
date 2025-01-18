@@ -7,9 +7,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -18,7 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-@Service
+@Component
+@Slf4j
 public class JwtService {
 
     @Value("${application.security.jwt.secret_key:}")
@@ -29,6 +32,8 @@ public class JwtService {
 
     public String extractUsername(String token)  {
         final Claims claims = extractAllClaims(token);
+
+        log.info("here is the subject: {}",claims.getSubject() );
         return (String) claims.get("email");
     }
 
@@ -57,7 +62,9 @@ public class JwtService {
     private <T> T extractClaims(String token, Function<Claims, T> claimResolver) {
 
         final Claims claims = extractAllClaims(token);
-        String email = (String) claims.get("email");
+       // String email = (String) claims.get("email");
+
+
         return claimResolver.apply(claims);
     }
 
@@ -78,6 +85,8 @@ public class JwtService {
     }
 
     private boolean isTokenExpired(String token) {
+
+
         return extractClaims(token, Claims::getExpiration).before(new Date());
     }
 

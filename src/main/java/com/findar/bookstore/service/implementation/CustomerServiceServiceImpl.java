@@ -4,7 +4,7 @@ package com.findar.bookstore.service.implementation;
 import com.findar.bookstore.DTOS.response.GeneralResponseDTO;
 import com.findar.bookstore.config.security.SecurityDetailsHolder;
 import com.findar.bookstore.enums.Constant;
-import com.findar.bookstore.enums.Errors;
+import com.findar.bookstore.exception.Errors;
 import com.findar.bookstore.exception.GeneralException;
 import com.findar.bookstore.model.entity.Book;
 import com.findar.bookstore.model.entity.Borrowed;
@@ -22,7 +22,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 

@@ -9,4 +9,6 @@ public interface CustomerUserDetails extends UserDetails {
     public String getEmail();
 
     public String getRole();
+
+    Boolean getTwoFa();
 }

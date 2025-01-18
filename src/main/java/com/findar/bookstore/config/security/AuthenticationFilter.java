@@ -1,9 +1,8 @@
 package com.findar.bookstore.config.security;
 
 
-import com.findar.bookstore.DTOS.response.GeneralResponseDTO;
 import com.findar.bookstore.config.jwt.JwtService;
-import com.findar.bookstore.enums.Errors;
+import com.findar.bookstore.exception.Errors;
 import com.findar.bookstore.exception.GeneralException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -49,7 +48,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         String token;
         String userEmail;
 
-     try {
+
          if (authHeader == null || !authHeader.startsWith("Bearer ")) {
              throw new GeneralException(Errors.INVALID_JWT_TOKEN, null);
              //   filterChain.doFilter(request, response);
@@ -63,6 +62,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
          try {
              userEmail = jwtService.extractUsername(token);
          }catch (Exception e){   throw new GeneralException(Errors.INVALID_JWT_TOKEN, null);}
+
          if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
              CustomerUserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
@@ -80,29 +80,12 @@ public class AuthenticationFilter extends OncePerRequestFilter {
          }
          filterChain.doFilter(request, response);
 
-     }catch (Exception e){
 
-        // throw new GeneralException("jfhf", HttpStatus.UNAUTHORIZED, null);
-
-         handleException(response, e);
-     }
 
 
     }
 
-    private void handleException(HttpServletResponse response, Exception ex) throws IOException {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType("application/json");
 
 
 
-        response.getWriter().write(authenticationFilterErrorHandler(ex));
-    }
-
-    private String authenticationFilterErrorHandler(Exception ex){
-
-        return "{\"message\": \"" + ex.getMessage() + "\", " +
-                  "\"success\":  " + false + "}";
-
-    }
 }

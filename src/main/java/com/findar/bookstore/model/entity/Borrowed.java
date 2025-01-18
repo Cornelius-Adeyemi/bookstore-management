@@ -19,7 +19,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Borrowed extends AuditEntity {
+public class  Borrowed extends AuditEntity {
 
 
 

@@ -36,6 +36,10 @@ public abstract class AuditEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime modifiedDate;
 
+    @CreatedBy
+    private String createdBy;
 
+    @LastModifiedBy
+    private String modifiedBy;
 
 }

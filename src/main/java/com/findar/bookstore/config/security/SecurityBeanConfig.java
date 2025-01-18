@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 @Configuration
 @RequiredArgsConstructor
-@Component
 public class SecurityBeanConfig {
 
     private final UserRepository userRepository;

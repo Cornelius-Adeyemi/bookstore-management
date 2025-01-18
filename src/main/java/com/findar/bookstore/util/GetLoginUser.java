@@ -8,7 +8,11 @@ public class GetLoginUser {
 
    public static SecurityDetailsHolder getLoginUser(){
 
-      SecurityDetailsHolder loginUser = (SecurityDetailsHolder) SecurityContextHolder.getContext().getAuthentication();
-      return loginUser;
+      Object contextInfo = SecurityContextHolder.getContext().getAuthentication();
+      if(contextInfo == null ){
+         return null;
+
+      }
+       return (SecurityDetailsHolder) contextInfo;
    }
 }

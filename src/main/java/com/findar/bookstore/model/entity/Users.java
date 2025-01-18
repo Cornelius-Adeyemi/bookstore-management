@@ -45,6 +45,9 @@ public class Users extends AuditEntity implements CustomerUserDetails {
     @Enumerated(EnumType.STRING)
     private Role  role;
 
+    @Getter
+    private Boolean  twoFa =false;
+
     private Boolean active= true;
   //  @JsonIgnoreProperties(value = {"user", "borrows"})
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

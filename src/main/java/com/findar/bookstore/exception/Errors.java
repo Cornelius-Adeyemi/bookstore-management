@@ -1,4 +1,4 @@
-package com.findar.bookstore.enums;
+package com.findar.bookstore.exception;
 
 
 import lombok.Getter;

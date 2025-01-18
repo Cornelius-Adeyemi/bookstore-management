@@ -3,7 +3,7 @@ package com.findar.bookstore.service.implementation;
 
 import com.findar.bookstore.DTOS.response.GeneralResponseDTO;
 import com.findar.bookstore.enums.Constant;
-import com.findar.bookstore.enums.Errors;
+import com.findar.bookstore.exception.Errors;
 import com.findar.bookstore.exception.GeneralException;
 import com.findar.bookstore.model.entity.Book;
 import com.findar.bookstore.repository.BookRepository;

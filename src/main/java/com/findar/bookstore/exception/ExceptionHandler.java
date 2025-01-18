@@ -3,7 +3,6 @@ package com.findar.bookstore.exception;
 
 
 import com.findar.bookstore.DTOS.response.GeneralResponseDTO;
-import com.findar.bookstore.enums.Errors;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -32,7 +31,7 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleDTOFieldException(MethodArgumentNotValidException e){
-
+        e.printStackTrace();
         Map<String, String> errorObject = new HashMap<>();
         e.getBindingResult().getFieldErrors().forEach(err-> errorObject.put(err.getField(), err.getDefaultMessage()));
 
@@ -45,7 +44,7 @@ public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex) {
-
+        ex.printStackTrace();
 
         return  new ResponseEntity<>(
 
@@ -57,7 +56,7 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleMissingRequestParameter( MissingServletRequestParameterException ex) {
-
+        ex.printStackTrace();
         String message = ex.getParameterName() + " parameter is missing";
 
 
@@ -74,7 +73,7 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleConstraintViolation( ConstraintViolationException ex) {
-
+        ex.printStackTrace();
         HashMap<String, Object> errorObject = new HashMap<>();
 
            ex.getConstraintViolations().forEach(
@@ -95,6 +94,7 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        ex.printStackTrace();
         String name = ex.getName();
         String type = Objects.requireNonNull(ex.getRequiredType()). getSimpleName();
         Object value = ex.getValue();
@@ -117,7 +117,7 @@ public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(GeneralException.class)
     public ResponseEntity<Object> handleGeneralException(GeneralException e){
-
+        e.printStackTrace();
         return new ResponseEntity<>(
 
                 GeneralResponseDTO.builder().message(e.getMessage())
@@ -131,7 +131,7 @@ public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Object> AccessDeniedHandler(Exception e){
-
+        e.printStackTrace();
         return new ResponseEntity<>(
 
                 GeneralResponseDTO.builder().message(e.getMessage())
@@ -143,7 +143,7 @@ public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<Object> UserNotFound(UsernameNotFoundException e){
-
+        e.printStackTrace();
         return new ResponseEntity<>(
 
                 GeneralResponseDTO.builder().message(e.getMessage())
@@ -155,7 +155,7 @@ public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<Object> expiredTokenFound(ExpiredJwtException e){
-
+        e.printStackTrace();
         return new ResponseEntity<>(
 
                 GeneralResponseDTO.builder().message("Expired jwt token")
@@ -167,7 +167,7 @@ public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleException(Exception e){
-
+        e.printStackTrace();
         return new ResponseEntity<>(
 
                 GeneralResponseDTO.builder().message(e.getMessage())

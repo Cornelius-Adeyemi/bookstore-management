@@ -24,27 +24,14 @@ public class CustomUserDetailService implements UserDetailsService {
 
     @Override
     public CustomerUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-      //  return userRepository.findByEmail(username).orElse( userRepository.findByUserName(username))
-      try {
-          Optional<Users> userByEmail = userRepository.findByEmail(username);
-          if (userByEmail.isPresent()) {
-              log.info("User found by email: " + username);
-              return userByEmail.get();
-          }
 
-          Optional<Users> userByUsername = userRepository.findByUserName(username);
-          if (userByUsername.isPresent()) {
-              log.info("User found by username: " + username);
-              return userByUsername.get();
-          }
 
-          log.error("User not found with username or email: " + username);
-          throw new UsernameNotFoundException("User " + username + " not found with username or email");
+        return userRepository.findByEmail(username).orElseGet(
+                  ()-> userRepository.findByUserName(username).orElseThrow(
+                          ()-> new GeneralException(username + " not found with username or email", HttpStatus.NOT_FOUND, null)
+                  )
+          );
 
-      }catch (UsernameNotFoundException e){
-
-          throw new GeneralException(e.getMessage(), HttpStatus.NOT_FOUND, null);
-      }
 
     }
 }

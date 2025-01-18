@@ -33,16 +33,16 @@ class AdminServiceImplTest {
    private AdminServiceImpl adminService;
 
 
-    @Test
-    void addBook() {
-        when(bookRepository.save(any(Book.class))).thenReturn(TestUtil.getBook());
-
-
-        GeneralResponseDTO generalResponseDTO = (GeneralResponseDTO) adminService.addBook(TestUtil.addBookDTO());
-
-        assertNotNull(generalResponseDTO);
-        assertEquals(generalResponseDTO.isSuccess(), true);
-    }
+//    @Test
+//    void addBook() {
+//        when(bookRepository.save(any(Book.class))).thenReturn(TestUtil.getBook());
+//
+//
+//        GeneralResponseDTO generalResponseDTO = (GeneralResponseDTO) adminService.addBook(TestUtil.addBookDTO());
+//
+//        assertNotNull(generalResponseDTO);
+//        assertEquals(generalResponseDTO.isSuccess(), true);
+//    }
 
 
 

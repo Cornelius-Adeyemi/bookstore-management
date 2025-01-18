@@ -34,7 +34,7 @@ public class AdminInitializer implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
 
         Optional<Users> user  = userRepository.findFirstByRole(Role.ADMIN);
-        if(!user.isPresent()){
+        if(user.isEmpty()){
             Users admin = new Users();
             admin.setFirstName("Admin");
             admin.setLastName("Admin");
@@ -42,7 +42,7 @@ public class AdminInitializer implements ApplicationRunner {
             admin.setUserName("superAdmin");
             admin.setActive(true);
             admin.setRole(Role.ADMIN);
-            admin.setPassword(passwordEncoder.encode(adminPassword));
+            admin.setPassword(passwordEncoder.encode(adminPassword.trim()));
 
               userRepository.save(admin);
         }

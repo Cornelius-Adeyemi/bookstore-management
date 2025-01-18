@@ -4,7 +4,7 @@ package com.findar.bookstore.enums;
 import lombok.Getter;
 
 @Getter
-public enum Activity {
+public enum  Activity {
 
 
     LOGIN("User login to app"),

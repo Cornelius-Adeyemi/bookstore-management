@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AnonymousConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -28,7 +29,7 @@ public class SecurityConfiguration {
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html","/actuator/**",
-            "/api/v1/auth/process/**", "/api/v1/admin/process/download-csv-sample"
+            "/api/v1/auth/process/**", "/api/v1/admin/process/download-csv-sample", "/api/v1/admin/process/upload-file"
     };
 
     @Bean
@@ -38,6 +39,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/v1/admin/process/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .anonymous(AnonymousConfigurer::disable)
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

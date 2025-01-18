@@ -1,6 +1,8 @@
 package com.findar.bookstore.controller;
 
 
+import com.findar.bookstore.DTOS.BookDTOs;
+import com.findar.bookstore.DTOS.TestMulitipleFileUpload;
 import com.findar.bookstore.DTOS.request.AddBookDTO;
 import com.findar.bookstore.DTOS.request.UpdateBookDTO;
 import com.findar.bookstore.service.interfaces.AdminService;
@@ -11,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * Please note in a robust project, this control would be modularised,
@@ -31,7 +35,7 @@ public class AdminController {
 
   @PostMapping("/add-book")
   @Operation(summary = "This is an endpoint to add a book to store")
-  public Object addBook(@Valid @RequestBody AddBookDTO addBookDTO){
+  public Object addBook(@Valid @RequestBody BookDTOs.AddBookDTO addBookDTO){
     return adminService.addBook(addBookDTO);
   }
 
@@ -91,5 +95,13 @@ public class AdminController {
     adminService.downloadCSVFileSample(response);
   }
 
+  @PostMapping("/upload-file")
+  public void testUploadOfFileInJava(@ModelAttribute TestMulitipleFileUpload files){
+
+      for(TestMulitipleFileUpload.MyFile file : files.getMyFiles()){
+          log.info("here is the file name {}", ((MultipartFile)file.getFile()).getOriginalFilename());
+
+      }
+  }
 
 }

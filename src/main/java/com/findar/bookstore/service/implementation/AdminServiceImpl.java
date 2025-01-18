@@ -1,5 +1,6 @@
 package com.findar.bookstore.service.implementation;
 
+import com.findar.bookstore.DTOS.BookDTOs;
 import com.findar.bookstore.DTOS.request.AddBookDTO;
 import com.findar.bookstore.DTOS.request.UpdateBookDTO;
 import com.findar.bookstore.DTOS.response.BookUserDTO;
@@ -7,7 +8,7 @@ import com.findar.bookstore.DTOS.response.BorrowedUserDTO;
 import com.findar.bookstore.DTOS.response.GeneralResponseDTO;
 import com.findar.bookstore.DTOS.response.UserResponseDTO;
 import com.findar.bookstore.enums.Constant;
-import com.findar.bookstore.enums.Errors;
+import com.findar.bookstore.exception.Errors;
 import com.findar.bookstore.enums.Role;
 import com.findar.bookstore.exception.GeneralException;
 import com.findar.bookstore.model.entity.Book;
@@ -52,13 +53,14 @@ public class AdminServiceImpl  implements AdminService {
 
 
     @Override
-    public Object addBook(AddBookDTO addBookDTO) {
+    public Object addBook(BookDTOs.AddBookDTO addBookDTO) {
 
         log.info("------------------------- add book");
 
-      if(addBookDTO.getAvailableQuantity() <= 0) throw new GeneralException(Errors.INVALID_BOOK_QUANTITY, addBookDTO.getTitle());
+      if(addBookDTO.availableQuantity() <= 0) throw new GeneralException(Errors.INVALID_BOOK_QUANTITY, addBookDTO.title());
 
-        Book book  = bookDTOMapper(addBookDTO);
+
+        Book book  = BookDTOs.bookDTOMapper(addBookDTO);
 
         Book savedBook = bookRepository.save(book);
 
@@ -76,7 +78,7 @@ public class AdminServiceImpl  implements AdminService {
         try(CSVReader reader = createCsvReader(file)){
             String[] headers = readCsvHeaders(reader);// get Csv header
             validateCsvHeaders(headers); // check if header is valid
-           List<AddBookDTO> addBookDTOList = readCsvData(reader, headers); // read csv body
+           List<BookDTOs.AddBookDTO> addBookDTOList = readCsvData(reader, headers); // read csv body
            return uploadBooks(addBookDTOList);
 
         } catch (IOException | CsvValidationException e) {
@@ -85,9 +87,9 @@ public class AdminServiceImpl  implements AdminService {
 
     }
 
-    private Object uploadBooks(List<AddBookDTO> requestDtoList) {
+    private Object uploadBooks(List<BookDTOs.AddBookDTO> requestDtoList) {
 
-        for (AddBookDTO requestDto : requestDtoList) {
+        for (BookDTOs.AddBookDTO requestDto : requestDtoList) {
             addBook(requestDto);
         }
            return GeneralResponseDTO.builder()
@@ -107,8 +109,8 @@ public class AdminServiceImpl  implements AdminService {
         }
     }
 
-    private List<AddBookDTO> readCsvData(CSVReader reader, String[] headers) throws IOException, CsvValidationException {
-        List<AddBookDTO> requestDtoList = new ArrayList<>();
+    private List<BookDTOs.AddBookDTO> readCsvData(CSVReader reader, String[] headers) throws IOException, CsvValidationException {
+        List<BookDTOs.AddBookDTO> requestDtoList = new ArrayList<>();
         int title = findHeaderIndex(headers, "TITLE");
         int author = findHeaderIndex(headers, "AUTHOR");
         int pages = findHeaderIndex(headers, "PAGES");
@@ -120,12 +122,15 @@ public class AdminServiceImpl  implements AdminService {
         String[] rowData;
         while ((rowData = reader.readNext()) != null) {
             if (rowData.length >= headers.length) {
-                AddBookDTO requestDto = new AddBookDTO();
-                requestDto.setChapters(rowData[chapters]);
-                requestDto.setTitle(rowData[title]);
-                requestDto.setAuthor(rowData[author]);
-                requestDto.setPages(rowData[pages]);
-                requestDto.setAvailableQuantity( Integer.parseInt(rowData[availableQuantity]));
+                BookDTOs.AddBookDTO requestDto = new BookDTOs.AddBookDTO(
+                        rowData[title],rowData[author],rowData[pages],rowData[chapters],
+                        true, Integer.parseInt(rowData[availableQuantity])
+                );
+//                requestDto.setChapters(rowData[chapters]);
+//                requestDto.setTitle(rowData[title]);
+//                requestDto.setAuthor(rowData[author]);
+//                requestDto.setPages(rowData[pages]);
+//                requestDto.setAvailableQuantity( Integer.parseInt(rowData[availableQuantity]));
 
                 requestDtoList.add(requestDto);
             } else {

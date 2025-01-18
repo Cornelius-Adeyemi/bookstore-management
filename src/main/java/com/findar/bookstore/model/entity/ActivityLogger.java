@@ -1,8 +1,6 @@
 package com.findar.bookstore.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.findar.bookstore.enums.Activity;
-import com.findar.bookstore.enums.Errors;
 import com.findar.bookstore.model.audith.AuditEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

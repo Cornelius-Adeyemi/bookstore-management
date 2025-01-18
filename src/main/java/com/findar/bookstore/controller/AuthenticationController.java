@@ -29,6 +29,13 @@ public class AuthenticationController {
     }
 
 
+    @GetMapping("/verify-otp")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public Object verifyOtpCode(@RequestParam("user") String user, @RequestParam("otp") String otp){
+        return authenticationService.validateOtP(user, otp);
+    }
+
+
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "This is an endpoint to sign up")

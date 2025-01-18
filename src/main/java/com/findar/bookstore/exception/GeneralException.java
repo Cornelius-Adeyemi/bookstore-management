@@ -1,6 +1,5 @@
 package com.findar.bookstore.exception;
 
-import com.findar.bookstore.enums.Errors;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

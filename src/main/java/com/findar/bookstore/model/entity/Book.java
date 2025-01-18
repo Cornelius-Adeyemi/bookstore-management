@@ -2,7 +2,7 @@ package com.findar.bookstore.model.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.findar.bookstore.enums.Errors;
+import com.findar.bookstore.exception.Errors;
 import com.findar.bookstore.exception.GeneralException;
 import com.findar.bookstore.model.audith.AuditEntity;
 import jakarta.persistence.Column;
